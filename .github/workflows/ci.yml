@@ -18,4 +18,20 @@ jobs:
 
       - name: Run tests
         run: ./test_lock_logic
-#Trigger a fresh test run
+
+      - name: Install SDCC
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sdcc
+
+      - name: Compile 8051 firmware
+        run: |
+          sdcc --version
+          sdcc -mmcs51 --model-small -o digital_lock_8051.ihx firmware/digital_lock_8051.c
+          packihx digital_lock_8051.ihx > digital_lock_8051.hex
+
+      - name: Upload 8051 firmware HEX
+        uses: actions/upload-artifact@v4
+        with:
+          name: digital-lock-8051-firmware
+          path: digital_lock_8051.hex
